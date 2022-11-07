@@ -1,28 +1,19 @@
-const fs = require('fs')
-const path = require('path')
+const path = require("path");
+const fs = require("fs");
 
-fs.readdir(path.join("03-files-in-folder", 'secret-folder'),{withFileTypes: true},function name(err, data){
-  data.forEach(element => {
-  
-  
-    if (element.isDirectory()) {
-      fs.readdir(path.join("03-files-in-folder", 'secret-folder', element.name.toString()), (err, data)=> data.forEach(element => {
-        
-        fs.stat(path.join("03-files-in-folder", 'secret-folder', element.toString()), (err, stats)=>{
-         
-          console.log(element + " - " + path.extname(element.toString() + " - " + stats))
-        
-        })
+const folder = path.join(__dirname, "../03-files-in-folder", "secret-folder");
 
-      })
-      )
-    } else {
-      fs.stat(path.join("03-files-in-folder", 'secret-folder', element.name.toString()), (err, stats)=>{
-        console.log(path.parse(element.name.toString()).name + ' - ' + path.extname(element.name.toString()) + ' - ' + stats['size'])
-      
-      
-      })
-      
+fs.readdir(folder, { withFileTypes: true }, (error, files) => {
+  if (error) throw error;
+
+  for (const file of files) {
+    if (file.isFile() === true) {
+      const fileName = path.parse(file.name).name;
+      const ext = path.extname(file.name).slice(1);
+      fs.stat(`${folder}/${file.name}`, (error, stats) => {
+        if (error) throw error;
+        console.table(`${fileName} - ${ext} - ${stats.size / 1000}kb`);
+      });
     }
-  });
-})
+  }
+});

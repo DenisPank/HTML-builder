@@ -1,24 +1,24 @@
-const fs = require('fs');
-const readline = require('readline');
+const path = require("path");
+const fs = require("fs");
+const { stdin, stdout } = process;
 
-
-const writeStream = fs.createWriteStream("02-write-file/text.txt")
-
-
-const rl = readline.createInterface({ input:process.stdin, output: process.stdout});
-
-
-rl.question("Напиши что-то!!! \n", (data)=>{
-  writeStream.write(data)
-  rl.on("line", (data)=>{
-  if (data == "exit") {
-    rl.close()
-  } else{
-      writeStream.write(data)
-    }
-  })
-})
-
-rl.on('close', ()=>{
-  console.log("пока(((")
-})
+stdout.write("Hello! Write your massage\n");
+stdin.on("data", (data) => {
+  let info = data.toString();
+  if (info.trim() === "exit") {
+    console.log("Exit from this program. Good luck!");
+    process.exit();
+  } else {
+    fs.appendFile(
+      path.join(__dirname, "../02-write-file", "text.txt"),
+      info,
+      (err) => {
+        if (err) throw err;
+      }
+    );
+  }
+});
+process.on("SIGINT", () => {
+  console.log("Exit from this program. Good luck!");
+  process.exit();
+});
